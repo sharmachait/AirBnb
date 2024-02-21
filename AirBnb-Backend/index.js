@@ -71,4 +71,8 @@ app.get('/profile', async (req, res) => {
     }
 });
 
+app.post('/logout', async (req, res) => {
+    res.status(200).cookie('token', '').json({ loggedout: true });
+});
+
 app.listen(3000, () => console.log("now listening on port 3000"));
