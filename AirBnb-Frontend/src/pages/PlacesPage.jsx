@@ -1,20 +1,40 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import axios from 'axios';
+import Perks from "../components/Perks";
 
 const PlacesPage = () => {
   const { action } = useParams();
-
   const [title, setTitle] = useState('');
   const [address, setAddress] = useState('');
   const [photos, setPhotos] = useState([]);
   const [photoLink, setPhotoLink] = useState('');
-  const [descriptio, setDescription] = useState('');
+  const [description, setDescription] = useState('');
   const [perks, setPerks] = useState([]);
   const [extraInfo, setExtraInfo] = useState('');
-  const [checkIn, setCheckIn] = useState('');
-  const [checkOut, setCheckOut] = useState('');
-  const [maxGuest, setMaxGuest] = useState('');
-  console.log(action);
+  const [checkIn, setCheckIn] = useState("13:00");
+  const [checkOut, setCheckOut] = useState("12:00");
+  const [maxGuest, setMaxGuest] = useState(1);
+  function inputHeader(text) {
+    return (<h2 className='text-2xl mt-4'>{text}</h2>);
+  }
+  function inputDescription(text) {
+    return (<p className="text-sm text-gray-400">{text}</p>);
+  }
+  function preInput(header, description) {
+    return (
+      <>
+        {inputHeader(header)}
+        {inputDescription(description)}
+      </>
+    );
+  }
+  async function addPhotoByLink(e) {
+    e.preventDefault();
+    let { data } = await axios.post('/upload-by-link', { link: photoLink });
+    setPhotos(prev => [...prev, data]);
+    setPhotoLink('');
+  }
   return (
     <div>
       {action !== 'new' && (<div className="text-center">
@@ -28,94 +48,57 @@ const PlacesPage = () => {
       </div>)}
       {action === 'new' && (
         <div>
-          <form className="mx-auto max-w-6xl">
-            <h2 className='text-2xl mt-4'>Title</h2>
-            <p className="text-sm text-gray-400">Give a short and catchy title for your accomodation</p>
-            <input type="text" placeholder="Title, for example: My lovely apartment" />
-            <h2 className='text-2xl mt-4'>Address</h2>
-            <p className="text-sm text-gray-400">How to get to your accomodation</p>
-            <input type="text" placeholder="Address" />
-            <h2 className='text-2xl mt-4'>Description</h2>
-            <p className="text-sm text-gray-400">Description of the place</p>
-            <textarea type="text" placeholder="Description" />
-            <h2 className='text-2xl mt-4'>Photos</h2>
-            <p className="text-sm text-gray-400">More is better</p>
+          <form className="mx-auto lg:max-w-6xl">
+
+            {preInput("Title", "Give a short and catchy title for your accomodation")}
+            <input type="text" value={title} onChange={(e) => { setTitle(e.target.value) }} placeholder="Title, for example: My lovely apartment" />
+
+            {preInput("Address", "How to get to your accomodation")}
+            <input type="text" value={address} onChange={(e) => { setAddress(e.target.value) }} placeholder="Address" />
+
+            {preInput("Description", "Description of the place")}
+            <textarea type="text" value={description} onChange={(e) => { setDescription(e.target.value) }} placeholder="Description" />
+
+            {preInput("Photos", "More is better")}
             <div className="flex gap-2">
-              <input type="text" placeholder="Add a link"></input>
-              <button className="bg-gray-200 px-4 rounded-2xl">Add&nbsp;Photo</button>
+              <input type="text" value={photoLink} onChange={(e) => { setPhotoLink(e.target.value) }} placeholder="Add a link"></input>
+              <button className="bg-gray-200 px-4 rounded-2xl" onClick={addPhotoByLink}>Add&nbsp;Photo</button>
             </div>
-            <div className="mt-2 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-              <button className="flex items-center justify-center gap-2 border bg-transparent text-2xl rounded-2xl p-8 text-gray-500">
+
+            <div className="mt-2 grid gap-3 grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+              {photos.length > 0 && (photos.map((x, i) => (
+                <img className="rounded-2xl" key={i} src={"http://localhost:3000/uploads/" + x}></img>
+              )
+              ))}
+              <label className="flex items-center justify-center gap-2 border bg-transparent text-2xl rounded-2xl p-8 text-gray-500">
+                <input type="file" className="hidden" />
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0 3 3m-3-3-3 3M6.75 19.5a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z" />
                 </svg>
                 <div>Upload</div>
-              </button>
-            </div>
-            <h2 className='text-2xl mt-4'>Perks</h2>
-            <p className="text-sm text-gray-400">What all do you offer</p>
-            <div className="grid mt-2 gap-2 grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-              <label className="border p-4 flex rounded-2xl gap-2 justify-center cursor-pointer items-center">
-                <input type="checkbox" />
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.288 15.038a5.25 5.25 0 0 1 7.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 0 1 1.06 0Z" />
-                </svg>
-                <span>Wifi</span>
               </label>
-              <label className="border p-4 flex rounded-2xl gap-2 justify-center cursor-pointer items-center">
-                <input type="checkbox" />
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
-                </svg>
-                <span>Free parking</span>
-              </label>
-              <label className="border p-4 flex rounded-2xl gap-2 justify-center cursor-pointer items-center">
-                <input type="checkbox" />
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 20.25h12m-7.5-3v3m3-3v3m-10.125-3h17.25c.621 0 1.125-.504 1.125-1.125V4.875c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125Z" />
-                </svg>
-                <span>TV</span>
-              </label>
-              <label className="border p-4 flex rounded-2xl gap-2 justify-center cursor-pointer items-center">
-                <input type="checkbox" />
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" />
-                </svg>
-                <span>Pets</span>
-              </label>
-              <label className="border p-4 flex rounded-2xl gap-2 justify-center cursor-pointer items-center">
-                <input type="checkbox" />
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
-                </svg>
 
-                <span>Private Entrance</span>
-              </label>
-              <label className="border p-4 flex rounded-2xl gap-2 justify-center cursor-pointer items-center">
-                <input type="checkbox" />
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 10.5h.375c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125H21M4.5 10.5H18V15H4.5v-4.5ZM3.75 18h15A2.25 2.25 0 0 0 21 15.75v-6a2.25 2.25 0 0 0-2.25-2.25h-15A2.25 2.25 0 0 0 1.5 9.75v6A2.25 2.25 0 0 0 3.75 18Z" />
-                </svg>
-                <span>Electric backup</span>
-              </label>
             </div>
-            <h2 className='text-2xl mt-4'>Extra info</h2>
-            <p className="text-sm text-gray-400">Extra info</p>
-            <textarea type="text" placeholder="Extra info" />
-            <h2 className='text-2xl mt-4'>Check in & out times</h2>
-            <p className="text-sm text-gray-400">Add the check in and check out times, remember to have a time window for cleaning the accomodation between guests.</p>
+
+            {preInput("Perks", "What all do you offer")}
+            <Perks selected={perks} onChange={setPerks}></Perks>
+
+            {preInput("Extra information", "Anythin you would like to tell?")}
+            <textarea type="text" value={extraInfo} onChange={(e) => { setExtraInfo(e.target.value) }} placeholder="Extra info" />
+
+            {preInput("Check in & out times", "Add the check in and check out times, remember to have a time window for cleaning the accomodation between guests")}
             <div className="flex gap-5 justify-evenly flex-col sm:flex-row sm:">
               <div className="w-full sm:w-60 mt-2 -mb-1 border rounded-2xl flex flex-col items-center justify-center p-2">
                 <h3>Check in time</h3>
-                <input type="time" placeholder="14:00" />
+                <input type="time" value={checkIn} onChange={(e) => { setCheckIn(e.target.value) }} />
               </div>
               <div className="w-full sm:w-60 mt-2 -mb-1 border rounded-2xl flex flex-col items-center justify-center p-2">
                 <h3>Check out time</h3>
-                <input type="time" />
+                <input type="time" value={checkOut} onChange={(e) => { setCheckOut(e.target.value) }} />
               </div>
               <div className="w-full sm:w-60 mt-2 -mb-1 border rounded-2xl flex flex-col items-center justify-center p-2">
                 <h3>Max guests</h3>
-                <input className="border-b max-w-24 px-4 border-gray-300 rounded-xl" type="number" />
+                <input value={maxGuest} onChange={e => { setMaxGuest(e.target.value) }} className="border-b max-w-24 pl-10 border-gray-300 rounded-xl" type="number" />
               </div>
             </div>
             <div className="flex justify-center">

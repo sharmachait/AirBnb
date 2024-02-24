@@ -3,13 +3,16 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
-const UserModel = require('./models/UserModel')
+const UserModel = require('./models/UserModel');
 const cookieParser = require('cookie-parser');
+const imageDownloader = require('image-downloader');
+
 require('dotenv').config();
 
 const app = express(10);
 
 app.use(cookieParser());
+app.use('/uploads', express.static(__dirname + '\\uploads'));
 app.use(cors({ credentials: true, origin: 'http://localhost:5173' }));
 app.use(express.json());
 
@@ -73,6 +76,17 @@ app.get('/profile', async (req, res) => {
 
 app.post('/logout', async (req, res) => {
   res.status(200).cookie('token', '').json({ loggedout: true });
+});
+
+app.post('/upload-by-link', async (req, res) => {
+  const { link } = req.body;
+  const newName = 'photo_' + Date.now() + '.jpg';
+  const options = {
+    url: link,
+    dest: __dirname + '\\uploads\\' + newName
+  };
+  let response = await imageDownloader.image(options);
+  res.json(newName);
 });
 
 app.listen(3000, () => console.log("now listening on port 3000"));
