@@ -7,7 +7,7 @@ const Perks = ({ perks, setPerks }) => {
     if (checked)
       setPerks([...perks, name]);
     else
-      setPerks(perks.filter(x => x != name))
+      setPerks([...perks.filter(x => x != name)]);
   }
 
   return (

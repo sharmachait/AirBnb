@@ -97,7 +97,7 @@ const PlacesPage = () => {
             </div>
 
             {preInput("Perks", "What all do you offer")}
-            <Perks selected={perks} onChange={setPerks}></Perks>
+            <Perks perks={perks} setPerks={setPerks}></Perks>
 
             {preInput("Extra information", "Anythin you would like to tell?")}
             <textarea type="text" value={extraInfo} onChange={(e) => { setExtraInfo(e.target.value) }} placeholder="Extra info" />
