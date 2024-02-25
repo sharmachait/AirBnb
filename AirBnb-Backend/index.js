@@ -6,6 +6,9 @@ const mongoose = require('mongoose');
 const UserModel = require('./models/UserModel');
 const cookieParser = require('cookie-parser');
 const imageDownloader = require('image-downloader');
+const multer = require('multer');
+const fs = require('fs');
+
 
 require('dotenv').config();
 
@@ -87,6 +90,21 @@ app.post('/upload-by-link', async (req, res) => {
   };
   let response = await imageDownloader.image(options);
   res.json(newName);
+});
+
+const photosMiddleware = multer({ dest: 'uploads/' });
+
+app.post('/upload', photosMiddleware.array('photos', 100), async (req, res) => {
+  const uploadedFiles = [];
+  for (let i = 0; i < req.files.length; i++) {
+    const { path, originalname } = req.files[i];
+    const ext = originalname.split('.')[originalname.split('.').length - 1];
+    fs.renameSync(path, path + '.' + ext);
+    const newPath = path + '.' + ext;
+    const newName = newPath.split('\\')[newPath.split('\\').length - 1];
+    uploadedFiles.push(newName);
+  }
+  res.json(uploadedFiles);
 });
 
 app.listen(3000, () => console.log("now listening on port 3000"));
