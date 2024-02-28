@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const UserModel = require('./models/UserModel');
+const PlaceModel = require('./models/PlaceModel');
 const cookieParser = require('cookie-parser');
 const imageDownloader = require('image-downloader');
 const multer = require('multer');
@@ -57,7 +58,7 @@ app.post('/login', async (req, res) => {
     console.log(e);
     res.status(422).send('login attempt failed')
   }
-})
+});
 app.get('/profile', async (req, res) => {
   try {
     const { token } = req.cookies;
@@ -105,6 +106,34 @@ app.post('/upload', photosMiddleware.array('photos', 100), async (req, res) => {
     uploadedFiles.push(newName);
   }
   res.json(uploadedFiles);
+});
+
+app.post('/places', async (req, res) => {
+  try {
+    const { token } = req.cookies;
+    const { title, address, photos, photoLink, description, perks, extraInfo, checkIn, checkOut, maxGuest } = req.body;
+    if (token) {
+      let decodedJson = await jwt.verify(token, jwtSecret);
+      const placeDoc = await PlaceModel.create({
+        owner: decodedJson.id,
+        title,
+        address,
+        photos,
+        photoLink,
+        description,
+        perks,
+        extraInfo,
+        checkIn,
+        checkOut,
+        maxGuest
+      });
+      res.status(201).json(placeDoc);
+    } else {
+      res.status(403).send('un authenticated');
+    }
+  } catch (e) {
+    res.status(403).send('un authenticated');
+  }
 });
 
 app.listen(3000, () => console.log("now listening on port 3000"));
