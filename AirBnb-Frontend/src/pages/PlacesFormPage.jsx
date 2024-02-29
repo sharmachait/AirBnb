@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import Uploader from '../components/Uploader';
 import Perks from '../components/Perks';
+import { Navigate } from 'react-router-dom';
 
 const PlacesFormPage = () => {
   const [title, setTitle] = useState('');
@@ -14,6 +15,7 @@ const PlacesFormPage = () => {
   const [checkIn, setCheckIn] = useState("13:00");
   const [checkOut, setCheckOut] = useState("12:00");
   const [maxGuest, setMaxGuest] = useState(1);
+  const [redirect, setRedirect] = useState(false);
   function inputHeader(text) {
     return (<h2 className='text-2xl mt-4'>{text}</h2>);
   }
@@ -52,6 +54,15 @@ const PlacesFormPage = () => {
     ev.preventDefault();
     const payload = { title, address, photos, photoLink, description, perks, extraInfo, checkIn, checkOut, maxGuest };
     const response = await axios.post('/places', payload);
+    console.log(response.status);
+    console.log(typeof response.status);
+    if (response.status == 201) {
+      setRedirect(true);
+    }
+  }
+
+  if (redirect) {
+    return (<Navigate to={'/account/places'} />);
   }
 
   return (
