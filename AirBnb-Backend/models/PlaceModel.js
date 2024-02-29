@@ -11,9 +11,10 @@ const PlaceSchema = new mongoose.Schema({
   photos: [String],
   description: String,
   perks: [String],
-  checkIn: Number,
-  checkOut: Number,
-  maxGuests: Number
+  checkIn: String,
+  checkOut: String,
+  maxGuests: Number,
+  extraInfo: String
 });
 
 const PlaceModel = mongoose.model('Place', PlaceSchema);

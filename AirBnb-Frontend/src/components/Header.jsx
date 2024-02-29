@@ -11,7 +11,7 @@ const Header = () => {
         </svg>
         <span className='font-bold text-xl'>AirBnb</span>
       </Link>
-      <div className='flex items-center gap-2 border border-gray-300 rounded-full py-2 px-4 shadow-md shadow-gray-300'>
+      <div className='ml-28 flex items-center gap-2 border border-gray-300 rounded-full py-2 px-4 shadow-md shadow-gray-300'>
         <div>Anywhere</div>
         <div className="border-l pl-2 border-gray-300">
           <div>Any week</div>

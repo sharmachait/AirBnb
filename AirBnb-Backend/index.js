@@ -114,26 +114,29 @@ app.post('/places', async (req, res) => {
     const { title, address, photos, photoLink, description, perks, extraInfo, checkIn, checkOut, maxGuest } = req.body;
     if (token) {
       let decodedJson = await jwt.verify(token, jwtSecret);
-      const placeDoc = await PlaceModel.create({
-        owner: decodedJson.id,
+      let UserDoc = await UserModel.findById(decodedJson.id);
+      let data = {
+        owner: UserDoc._id,
         title,
         address,
         photos,
-        photoLink,
         description,
         perks,
         extraInfo,
         checkIn,
         checkOut,
         maxGuest
-      });
+      };
+      const placeDoc = await PlaceModel.create(data);
       res.status(201).json(placeDoc);
     } else {
-      res.status(403).send('un authenticated');
+      res.status(403).send('un authenticated rbuh');
     }
   } catch (e) {
+    console.log(e.message);
     res.status(403).send('un authenticated');
   }
 });
+
 
 app.listen(3000, () => console.log("now listening on port 3000"));
