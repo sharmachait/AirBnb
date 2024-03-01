@@ -37,7 +37,7 @@ const PlacesPage = () => {
             {places.length > 0 && places.map((place) => (
               <div key={place._id} className="mx-auto mb-4 lg:max-w-6xl bg-gray-200 p-4 rounded-2xl flex gap-4 cursor-pointer">
                 <Link to={'/account/places/' + place._id} className="max-w-32 sm:max-w-48 lg:max-w-64 grow shrink-0">
-                  {place.photos.length > 0 && <img className="rounded-2xl w-full object-cover" src={"http://localhost:3000/uploads/" + place.photos[1]} />}
+                  {place.photos.length > 0 && <img className="rounded-2xl w-full object-cover" src={"http://localhost:3000/uploads/" + place.photos[0]} />}
                 </Link>
                 <div className="flex flex-col shrink">
                   <h2 className="text-sm font-bold md:text-xl md:font-normal">{place.title}</h2>

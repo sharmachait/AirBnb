@@ -75,6 +75,13 @@ const PlacesFormPage = () => {
     ev.preventDefault();
     if (id) {
       //update
+      const payload = { title, address, photos, photoLink, description, perks, extraInfo, checkIn, checkOut, maxGuest };
+      const response = await axios.put('/places/' + id, payload);
+      console.log(response.status);
+      console.log(typeof response.status);
+      if (response.status == 201) {
+        setRedirect(true);
+      }
     }
     else {
       //new
@@ -107,7 +114,7 @@ const PlacesFormPage = () => {
         <textarea type="text" value={description} onChange={(e) => { setDescription(e.target.value) }} placeholder="Description" />
 
         {preInput("Photos", "More is better")}
-        <Uploader uploadPhoto={uploadPhoto} photos={photos} addPhotoByLink={addPhotoByLink} setPhotoLink={setPhotoLink} photoLink={photoLink}></Uploader>
+        <Uploader uploadPhoto={uploadPhoto} photos={photos} addPhotoByLink={addPhotoByLink} setPhotoLink={setPhotoLink} photoLink={photoLink} setPhotos={setPhotos}></Uploader>
 
         {preInput("Perks", "What all do you offer")}
         <Perks perks={perks} setPerks={setPerks}></Perks>
@@ -130,11 +137,11 @@ const PlacesFormPage = () => {
             <input value={maxGuest} onChange={e => { setMaxGuest(e.target.value) }} className="border-b max-w-24 pl-10 border-gray-300 rounded-xl" type="number" />
           </div>
         </div>
-        <div className="flex justify-center">
+        <div className="flex justify-center items-center align-middle">
           <button className="flex gap-2 justify-center items-center mt-10 primary max-w-56 mx">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg> Add accomodation</button>
+            </svg>Save</button>
         </div>
 
       </form>

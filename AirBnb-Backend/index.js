@@ -9,6 +9,7 @@ const cookieParser = require('cookie-parser');
 const imageDownloader = require('image-downloader');
 const multer = require('multer');
 const fs = require('fs');
+const { log } = require('console');
 
 
 require('dotenv').config();
@@ -156,11 +157,37 @@ app.get('/places', async (req, res) => {
     res.status(500).send('internal server error');
   }
 });
+
 app.get("/places/:id", async (req, res) => {
   const id = req.params.id;
   let place = await PlaceModel.findById(id);
-  console.log(id);
   res.json(place);
+});
+
+app.put("/places/:id", async (req, res) => {
+  try {
+    const { token } = req.cookies;
+    const id = req.params.id;
+    if (token) {
+      let decodedJson = await jwt.verify(token, jwtSecret);
+      let UserDoc = await UserModel.findById(decodedJson.id);
+      let place = await PlaceModel.findById(id);
+      if (place.owner.toString() !== UserDoc._id.toString()) {
+        throw new Error('unauthorized');
+      }
+
+      const { title, address, photos, description, perks, extraInfo, checkIn, checkOut, maxGuest } = req.body;
+      place.set({ title, address, photos, description, perks, extraInfo, checkIn, checkOut, maxGuests: maxGuest });
+      await place.save();
+      res.status(201).json(place);
+    }
+    else {
+      res.status(403).send("un authenticated")
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(500).send('internal server error');
+  }
 });
 
 app.listen(3000, () => console.log("now listening on port 3000"));
