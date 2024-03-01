@@ -112,6 +112,7 @@ app.post('/places', async (req, res) => {
   try {
     const { token } = req.cookies;
     const { title, address, photos, photoLink, description, perks, extraInfo, checkIn, checkOut, maxGuest } = req.body;
+    console.log(maxGuest);
     if (token) {
       let decodedJson = await jwt.verify(token, jwtSecret);
       let UserDoc = await UserModel.findById(decodedJson.id);
@@ -125,7 +126,7 @@ app.post('/places', async (req, res) => {
         extraInfo,
         checkIn,
         checkOut,
-        maxGuest
+        maxGuests: Number(maxGuest)
       };
       const placeDoc = await PlaceModel.create(data);
       res.status(201).json(placeDoc);
@@ -138,5 +139,64 @@ app.post('/places', async (req, res) => {
   }
 });
 
+app.get('/places', async (req, res) => {
+  try {
+    const { token } = req.cookies;
+    if (token) {
+      let decodedJson = await jwt.verify(token, jwtSecret);
+      let UserDoc = await UserModel.findById(decodedJson.id);
+      let places = await PlaceModel.find({ owner: UserDoc._id });
+      res.status(200).json(places);
+    }
+    else {
+      res.status(403).send("un authenticated")
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(500).send('internal server error');
+  }
+});
+app.get("/places/:id", async (req, res) => {
+  const id = req.params.id;
+  let place = await PlaceModel.findById(id);
+  console.log(id);
+  res.json(place);
+});
 
 app.listen(3000, () => console.log("now listening on port 3000"));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
