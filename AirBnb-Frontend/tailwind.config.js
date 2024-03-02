@@ -10,6 +10,11 @@ export default {
         primary: '#F5385D'
       }
     },
+    screens: {
+      'xs': '480px',
+      'md': '640px',
+      'lg': '1000px'
+    }
   },
   plugins: [],
 }

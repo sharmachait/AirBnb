@@ -112,7 +112,7 @@ app.post('/upload', photosMiddleware.array('photos', 100), async (req, res) => {
 app.post('/places', async (req, res) => {
   try {
     const { token } = req.cookies;
-    const { title, address, photos, photoLink, description, perks, extraInfo, checkIn, checkOut, maxGuest } = req.body;
+    const { title, address, photos, photoLink, description, perks, extraInfo, checkIn, checkOut, maxGuest, price } = req.body;
     console.log(maxGuest);
     if (token) {
       let decodedJson = await jwt.verify(token, jwtSecret);
@@ -127,7 +127,8 @@ app.post('/places', async (req, res) => {
         extraInfo,
         checkIn,
         checkOut,
-        maxGuests: Number(maxGuest)
+        maxGuests: Number(maxGuest),
+        price
       };
       const placeDoc = await PlaceModel.create(data);
       res.status(201).json(placeDoc);
@@ -140,7 +141,7 @@ app.post('/places', async (req, res) => {
   }
 });
 
-app.get('/places', async (req, res) => {
+app.get('/user-places', async (req, res) => {
   try {
     const { token } = req.cookies;
     if (token) {
@@ -150,7 +151,7 @@ app.get('/places', async (req, res) => {
       res.status(200).json(places);
     }
     else {
-      res.status(403).send("un authenticated")
+      res.status(403).send("un authenticated");
     }
   } catch (e) {
     console.log(e);
@@ -176,8 +177,8 @@ app.put("/places/:id", async (req, res) => {
         throw new Error('unauthorized');
       }
 
-      const { title, address, photos, description, perks, extraInfo, checkIn, checkOut, maxGuest } = req.body;
-      place.set({ title, address, photos, description, perks, extraInfo, checkIn, checkOut, maxGuests: maxGuest });
+      const { title, address, photos, description, perks, extraInfo, checkIn, checkOut, maxGuest, price } = req.body;
+      place.set({ title, address, photos, description, perks, extraInfo, checkIn, checkOut, maxGuests: maxGuest, price });
       await place.save();
       res.status(201).json(place);
     }
@@ -188,6 +189,10 @@ app.put("/places/:id", async (req, res) => {
     console.log(e);
     res.status(500).send('internal server error');
   }
+});
+
+app.get('/places', async (req, res) => {
+  res.json(await PlaceModel.find({}))
 });
 
 app.listen(3000, () => console.log("now listening on port 3000"));

@@ -17,6 +17,7 @@ const PlacesFormPage = () => {
   const [checkIn, setCheckIn] = useState("13:00");
   const [checkOut, setCheckOut] = useState("12:00");
   const [maxGuest, setMaxGuest] = useState(1);
+  const [price, setPrice] = useState(100);
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
@@ -34,6 +35,7 @@ const PlacesFormPage = () => {
       setCheckIn(data.checkIn);
       setCheckOut(data.checkOut);
       setMaxGuest(data.maxGuests);
+      setPrice(data.price);
     });
   }, [id]);
 
@@ -75,7 +77,7 @@ const PlacesFormPage = () => {
     ev.preventDefault();
     if (id) {
       //update
-      const payload = { title, address, photos, photoLink, description, perks, extraInfo, checkIn, checkOut, maxGuest };
+      const payload = { title, address, photos, photoLink, description, perks, extraInfo, checkIn, checkOut, maxGuest, price };
       const response = await axios.put('/places/' + id, payload);
       console.log(response.status);
       console.log(typeof response.status);
@@ -123,7 +125,7 @@ const PlacesFormPage = () => {
         <textarea type="text" value={extraInfo} onChange={(e) => { setExtraInfo(e.target.value) }} placeholder="Extra info" />
 
         {preInput("Check in & out times", "Add the check in and check out times, remember to have a time window for cleaning the accomodation between guests")}
-        <div className="flex gap-5 justify-evenly flex-col sm:flex-row sm:">
+        <div className=" gap-5 justify-evenly grid grid-cols-2 md:grid-cols-4">
           <div className="w-full sm:w-60 mt-2 -mb-1 border rounded-2xl flex flex-col items-center justify-center p-2">
             <h3>Check in time</h3>
             <input type="time" value={checkIn} onChange={(e) => { setCheckIn(e.target.value) }} />
@@ -134,7 +136,11 @@ const PlacesFormPage = () => {
           </div>
           <div className="w-full sm:w-60 mt-2 -mb-1 border rounded-2xl flex flex-col items-center justify-center p-2">
             <h3>Max guests</h3>
-            <input value={maxGuest} onChange={e => { setMaxGuest(e.target.value) }} className="border-b max-w-24 pl-10 border-gray-300 rounded-xl" type="number" />
+            <input value={maxGuest} onChange={e => { setMaxGuest(e.target.value) }} className="border-b max-w-24 text-center border-gray-300 rounded-xl" type="number" />
+          </div>
+          <div className="w-full sm:w-60 mt-2 -mb-1 border rounded-2xl flex flex-col items-center justify-center p-2">
+            <h3>Price ($)</h3>
+            <input value={price} onChange={e => { setPrice(e.target.value) }} className="border-b  text-center border-gray-300 rounded-xl" type="number" />
           </div>
         </div>
         <div className="flex justify-center items-center align-middle">
