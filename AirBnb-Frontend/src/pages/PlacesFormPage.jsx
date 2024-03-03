@@ -17,7 +17,7 @@ const PlacesFormPage = () => {
   const [checkIn, setCheckIn] = useState("13:00");
   const [checkOut, setCheckOut] = useState("12:00");
   const [maxGuest, setMaxGuest] = useState(1);
-  const [price, setPrice] = useState(100);
+  const [price, setPrice] = useState(0);
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
@@ -28,9 +28,9 @@ const PlacesFormPage = () => {
       setAddress(data.address);
       setPhotos(data.photos);
       setDescription(data.description);
-      console.log(data.perks);
+
       setPerks(data.perks);
-      console.log(perks);
+
       setExtraInfo(data.extraInfo);
       setCheckIn(data.checkIn);
       setCheckOut(data.checkOut);
@@ -87,7 +87,7 @@ const PlacesFormPage = () => {
     }
     else {
       //new
-      const payload = { title, address, photos, photoLink, description, perks, extraInfo, checkIn, checkOut, maxGuest };
+      const payload = { title, address, photos, photoLink, description, perks, extraInfo, checkIn, checkOut, maxGuest, price };
       const response = await axios.post('/places', payload);
       console.log(response.status);
       console.log(typeof response.status);
