@@ -6,8 +6,8 @@ const BookingsPage = () => {
   const [bookings, setBookings] = useState([]);
   useEffect(() => {
     axios.get('/bookings').then(res => {
-      console.log(res.data);
-      setBookings(res.data);
+      console.log(res.data.booking);
+      setBookings(res.data.booking);
     });
   }, []);
   return (
