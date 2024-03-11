@@ -10,6 +10,7 @@ const imageDownloader = require('image-downloader');
 const multer = require('multer');
 const fs = require('fs');
 const { log } = require('console');
+const BookingModel = require('./models/bookingModel');
 
 
 require('dotenv').config();
@@ -193,6 +194,64 @@ app.put("/places/:id", async (req, res) => {
 
 app.get('/places', async (req, res) => {
   res.json(await PlaceModel.find({}))
+});
+
+app.post('/booking', async (req, res) => {
+  try {
+    const { token } = req.cookies;
+    if (token) {
+      let decodedJson = await jwt.verify(token, jwtSecret);
+      let UserDoc = await UserModel.findById(decodedJson.id);
+      const { checkIn,
+        checkOut,
+        guests,
+        phone: number,
+        name,
+        placeId,
+        price,
+        nights
+      } = req.body;
+      console.log(req.body);
+      const response = await BookingModel.create({
+        checkIn,
+        checkOut,
+        guests,
+        phone: number,
+        name,
+        place: placeId,
+        price,
+        nights,
+        user: UserDoc._id
+      });
+
+      res.status(201).json(response);
+    }
+    else {
+      res.status(403).send("un authenticated")
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(500).send('error in booking');
+  }
+});
+
+app.get('/bookings', async (req, res) => {
+  try {
+    const { token } = req.cookies;
+    if (token) {
+      let decodedJson = await jwt.verify(token, jwtSecret);
+      let UserDoc = await UserModel.findById(decodedJson.id);
+      let booking = await BookingModel.find({ user: UserDoc._id }).populate('place');
+      console.log(typeof booking);
+      res.json({ booking });
+    }
+    else {
+      res.status(403).send("un authenticated")
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(403).send('unauthorized');
+  }
 });
 
 app.listen(3000, () => console.log("now listening on port 3000"));

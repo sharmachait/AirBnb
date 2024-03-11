@@ -4,6 +4,7 @@ import { Link, Navigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import PlacesPage from './PlacesPage';
 import AccountNav from '../AccountNav';
+import BookingsPage from './BookingsPage';
 
 const AccountPage = () => {
   let { subpage } = useParams();
@@ -46,6 +47,11 @@ const AccountPage = () => {
           <PlacesPage></PlacesPage>
         </div>
       )}
+      {
+        subpage === 'bookings' && (
+          <BookingsPage></BookingsPage>
+        )
+      }
     </div>
   );
 }
